@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { Layers, Package, Category, ShoppingBag, Users, Settings, BarChart2 } from 'lucide-react';
+import { Layers, Package, FolderTree, ShoppingBag, Users, Settings, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: BarChart2 },
     { name: 'Products', href: '/admin/products', icon: Package },
-    { name: 'Categories', href: '/admin/categories', icon: Category },
+    { name: 'Categories', href: '/admin/categories', icon: FolderTree },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   ];
   

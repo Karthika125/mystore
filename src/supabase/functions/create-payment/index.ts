@@ -1,12 +1,16 @@
-
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+// @ts-ignore
 import Stripe from "https://esm.sh/stripe@14.21.0";
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+declare var Deno: any; // Add this line to resolve Deno reference
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -33,18 +37,16 @@ serve(async (req) => {
       throw new Error("Invalid payment amount");
     }
 
-    // Initialize Stripe with a dummy key (you need to replace this with your actual key)
+    // Initialize Stripe with a dummy key (replace this with actual key)
+    // @ts-ignore
     const stripe = new Stripe("sk_test_YOUR_STRIPE_KEY", {
       apiVersion: "2023-10-16",
     });
     
-    // For demonstration purposes, we'll return a mock payment session URL
-    // In a real application, you would create a Stripe Checkout session here
-    
-    // This is a simulation of a successful payment session creation
+    // For demonstration purposes, return a mock payment session URL
     const sessionUrl = `https://checkout.stripe.com/c/pay/mock-session-${Date.now()}`;
 
-    // Create an order in the database
+    // Create an order in the database if user is authenticated
     if (user) {
       // Create a service client with admin privileges
       const supabaseAdmin = createClient(

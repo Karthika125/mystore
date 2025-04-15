@@ -1,8 +1,8 @@
+'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from "@/integrations/supabase/client";
 import { CartItem, Product } from "@/types";
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/src/hooks/use-toast';
 
 interface CartContextType {
   cartItems: CartItem[];

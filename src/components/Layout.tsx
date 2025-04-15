@@ -1,37 +1,39 @@
+'use client';
 
-import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, UserCircle, Package } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { ShoppingCart, Menu, X, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartCount } = useCart();
   const { user, isAdmin, signOut } = useAuth();
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b sticky top-0 z-10 bg-white">
         <div className="container mx-auto py-4 px-4 flex items-center justify-between">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold">E-Shop</Link>
+            <Link href="/" className="text-2xl font-bold">E-Shop</Link>
           </div>
           
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className={`hover:text-primary ${location.pathname === '/' ? 'text-primary font-medium' : ''}`}>
+            <Link href="/" className={`hover:text-primary ${pathname === '/' ? 'text-primary font-medium' : ''}`}>
               Home
             </Link>
-            <Link to="/products" className={`hover:text-primary ${location.pathname === '/products' ? 'text-primary font-medium' : ''}`}>
+            <Link href="/products" className={`hover:text-primary ${pathname === '/products' ? 'text-primary font-medium' : ''}`}>
               Products
             </Link>
-            <Link to="/categories" className={`hover:text-primary ${location.pathname === '/categories' ? 'text-primary font-medium' : ''}`}>
+            <Link href="/categories" className={`hover:text-primary ${pathname === '/categories' ? 'text-primary font-medium' : ''}`}>
               Categories
             </Link>
             {isAdmin && (
-              <Link to="/admin" className={`hover:text-primary ${location.pathname.startsWith('/admin') ? 'text-primary font-medium' : ''}`}>
+              <Link href="/admin" className={`hover:text-primary ${pathname?.startsWith('/admin') ? 'text-primary font-medium' : ''}`}>
                 Admin
               </Link>
             )}
@@ -49,15 +51,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <p className="text-sm font-medium truncate">{user.email}</p>
                       <p className="text-xs text-gray-500 capitalize">{user.role}</p>
                     </div>
-                    <Link to="/account" className="block px-4 py-2 text-sm hover:bg-gray-100">
+                    <Link href="/account" className="block px-4 py-2 text-sm hover:bg-gray-100">
                       My Account
                     </Link>
                     {isAdmin && (
-                      <Link to="/admin" className="block px-4 py-2 text-sm hover:bg-gray-100">
+                      <Link href="/admin" className="block px-4 py-2 text-sm hover:bg-gray-100">
                         Admin Dashboard
                       </Link>
                     )}
-                    <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-gray-100">
+                    <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-gray-100">
                       My Orders
                     </Link>
                     <button 
@@ -70,12 +72,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             ) : (
-              <Link to="/auth" className="hidden md:block">
+              <Link href="/auth" className="hidden md:block">
                 <Button variant="outline">Sign In</Button>
               </Link>
             )}
             
-            <Link to="/cart" className="relative">
+            <Link href="/cart" className="relative">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-6 w-6" />
                 {cartCount > 0 && (
@@ -102,22 +104,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="md:hidden p-4 bg-gray-50 border-t">
             <div className="flex flex-col space-y-3">
               <Link 
-                to="/" 
-                className={`px-2 py-1 rounded-md ${location.pathname === '/' ? 'bg-gray-200' : ''}`}
+                href="/" 
+                className={`px-2 py-1 rounded-md ${pathname === '/' ? 'bg-gray-200' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link 
-                to="/products" 
-                className={`px-2 py-1 rounded-md ${location.pathname === '/products' ? 'bg-gray-200' : ''}`}
+                href="/products" 
+                className={`px-2 py-1 rounded-md ${pathname === '/products' ? 'bg-gray-200' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Products
               </Link>
               <Link 
-                to="/categories" 
-                className={`px-2 py-1 rounded-md ${location.pathname === '/categories' ? 'bg-gray-200' : ''}`}
+                href="/categories" 
+                className={`px-2 py-1 rounded-md ${pathname === '/categories' ? 'bg-gray-200' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Categories
@@ -125,23 +127,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {user ? (
                 <>
                   <Link 
-                    to="/account" 
-                    className={`px-2 py-1 rounded-md ${location.pathname === '/account' ? 'bg-gray-200' : ''}`}
+                    href="/account" 
+                    className={`px-2 py-1 rounded-md ${pathname === '/account' ? 'bg-gray-200' : ''}`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Account
                   </Link>
                   <Link 
-                    to="/orders" 
-                    className={`px-2 py-1 rounded-md ${location.pathname === '/orders' ? 'bg-gray-200' : ''}`}
+                    href="/orders" 
+                    className={`px-2 py-1 rounded-md ${pathname === '/orders' ? 'bg-gray-200' : ''}`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Orders
                   </Link>
                   {isAdmin && (
                     <Link 
-                      to="/admin" 
-                      className={`px-2 py-1 rounded-md ${location.pathname.startsWith('/admin') ? 'bg-gray-200' : ''}`}
+                      href="/admin" 
+                      className={`px-2 py-1 rounded-md ${pathname?.startsWith('/admin') ? 'bg-gray-200' : ''}`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Admin Dashboard
@@ -159,7 +161,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </>
               ) : (
                 <Link 
-                  to="/auth" 
+                  href="/auth" 
                   className="px-2 py-1 rounded-md"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -186,18 +188,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div>
               <h3 className="text-lg font-bold mb-4">Shop</h3>
               <ul className="space-y-2">
-                <li><Link to="/products" className="text-sm text-gray-600 hover:text-gray-900">All Products</Link></li>
-                <li><Link to="/categories" className="text-sm text-gray-600 hover:text-gray-900">Categories</Link></li>
-                <li><Link to="/cart" className="text-sm text-gray-600 hover:text-gray-900">Cart</Link></li>
+                <li><Link href="/products" className="text-sm text-gray-600 hover:text-gray-900">All Products</Link></li>
+                <li><Link href="/categories" className="text-sm text-gray-600 hover:text-gray-900">Categories</Link></li>
+                <li><Link href="/cart" className="text-sm text-gray-600 hover:text-gray-900">Cart</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="text-lg font-bold mb-4">Account</h3>
               <ul className="space-y-2">
-                <li><Link to="/account" className="text-sm text-gray-600 hover:text-gray-900">My Account</Link></li>
-                <li><Link to="/orders" className="text-sm text-gray-600 hover:text-gray-900">My Orders</Link></li>
-                {!user && <li><Link to="/auth" className="text-sm text-gray-600 hover:text-gray-900">Sign In / Register</Link></li>}
+                <li><Link href="/account" className="text-sm text-gray-600 hover:text-gray-900">My Account</Link></li>
+                <li><Link href="/orders" className="text-sm text-gray-600 hover:text-gray-900">My Orders</Link></li>
+                {!user && <li><Link href="/auth" className="text-sm text-gray-600 hover:text-gray-900">Sign In / Register</Link></li>}
               </ul>
             </div>
             

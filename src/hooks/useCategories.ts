@@ -1,11 +1,12 @@
+'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/src/lib/supabase';
 import { Category } from '@/types';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/src/hooks/use-toast';
 
 export function useCategories() {
-  return useQuery({
+  return useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -22,21 +23,23 @@ export function useCategories() {
         throw error;
       }
       
-      return data as Category[];
+      return data || [];
     },
   });
 }
 
-export function useCategory(categoryId: string | undefined) {
-  return useQuery({
-    queryKey: ['categories', categoryId],
+export function useCategory(id: string | undefined) {
+  return useQuery<Category>({
+    queryKey: ['category', id],
     queryFn: async () => {
-      if (!categoryId) return null;
+      if (!id) {
+        throw new Error('Category ID is required');
+      }
       
       const { data, error } = await supabase
         .from('categories')
         .select('*')
-        .eq('id', categoryId)
+        .eq('id', id)
         .single();
         
       if (error) {
@@ -48,9 +51,9 @@ export function useCategory(categoryId: string | undefined) {
         throw error;
       }
       
-      return data as Category;
+      return data;
     },
-    enabled: !!categoryId,
+    enabled: !!id,
   });
 }
 

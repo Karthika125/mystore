@@ -1,6 +1,7 @@
+'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/src/lib/supabase";
 import { User } from '@/types';
 import { toast } from '@/hooks/use-toast';
 

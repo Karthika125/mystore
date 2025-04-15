@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Loader2 } from 'lucide-react';
@@ -13,7 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils';
 import Layout from '@/components/Layout';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/src/lib/supabase';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),

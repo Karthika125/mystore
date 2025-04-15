@@ -1,59 +1,73 @@
+'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/src/lib/supabase';
 import { Product } from '@/types';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/src/hooks/use-toast';
 
-export function useProducts(categoryId?: string) {
-  return useQuery({
-    queryKey: ['products', categoryId],
+export function useProducts() {
+  return useQuery<Product[]>({
+    queryKey: ['products'],
     queryFn: async () => {
-      let query = supabase.from('products').select('*');
-      
-      if (categoryId) {
-        query = query.eq('category_id', categoryId);
-      }
-      
-      const { data, error } = await query;
-      
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
       if (error) {
-        toast({
-          title: "Error loading products",
-          description: error.message,
-          variant: "destructive",
-        });
-        throw error;
+        throw new Error(error.message);
       }
       
-      return data as Product[];
+      return data || [];
     },
   });
 }
 
-export function useProduct(productId: string | undefined) {
-  return useQuery({
-    queryKey: ['products', productId],
+export function useProduct(id: string | undefined) {
+  return useQuery<Product>({
+    queryKey: ['product', id],
     queryFn: async () => {
-      if (!productId) return null;
+      if (!id) {
+        throw new Error('Product ID is required');
+      }
       
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('id', productId)
+        .eq('id', id)
         .single();
-      
+        
       if (error) {
-        toast({
-          title: "Error loading product",
-          description: error.message,
-          variant: "destructive",
-        });
-        throw error;
+        throw new Error(error.message);
       }
       
-      return data as Product;
+      return data;
     },
-    enabled: !!productId,
+    enabled: !!id,
+  });
+}
+
+export function useProductsByCategory(categoryId: string | undefined) {
+  return useQuery<Product[]>({
+    queryKey: ['products', 'category', categoryId],
+    queryFn: async () => {
+      if (!categoryId) {
+        throw new Error('Category ID is required');
+      }
+      
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category_id', categoryId)
+        .order('created_at', { ascending: false });
+        
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      return data || [];
+    },
+    enabled: !!categoryId,
   });
 }
 

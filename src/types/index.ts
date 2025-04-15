@@ -5,7 +5,7 @@ export interface Product {
   description: string;
   price: number;
   images: string[];
-  category_id: string;
+  category_id: string | null;
   created_at: string;
   inventory_count: number;
 }
@@ -13,7 +13,8 @@ export interface Product {
 export interface Category {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
+  created_at: string;
 }
 
 export interface CartItem {
@@ -31,6 +32,8 @@ export interface Order {
 }
 
 export interface OrderItem {
+  id: string;
+  order_id: string;
   product_id: string;
   product_name: string;
   product_price: number;

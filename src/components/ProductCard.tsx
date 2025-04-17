@@ -1,9 +1,10 @@
-
-import { Link } from 'react-router-dom';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Product } from '@/types';
-import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency } from '@/lib/utils';
+import { useState } from 'react';
+import { Loader2, ShoppingCart } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -11,54 +12,64 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addToCart(product, 1);
+  const handleAddToCart = async () => {
+    setIsLoading(true);
+    await addToCart(product);
+    setIsLoading(false);
   };
   
   return (
-    <Link 
-      to={`/products/${product.id}`}
-      className="group rounded-lg border overflow-hidden hover:shadow-lg transition-shadow"
-    >
-      <div className="aspect-square bg-gray-100 relative overflow-hidden">
-        {product.images && product.images.length > 0 ? (
-          <img
+    <div className="group relative overflow-hidden bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-primary-pink/20">
+      <div className="absolute inset-0 bg-gradient-to-b from-primary-pink/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <Link href={`/products/${product.id}`} className="block aspect-square overflow-hidden">
+        <div className="relative h-full">
+          <Image
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            width={500}
+            height={500}
+            className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-500"
           />
-        ) : (
-          <div className="flex items-center justify-center h-full bg-gray-200">
-            <span className="text-gray-400">No image</span>
-          </div>
-        )}
-        
-        {product.inventory_count <= 0 && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-            Out of Stock
-          </div>
-        )}
-      </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+      </Link>
       
-      <div className="p-4">
-        <h3 className="font-medium line-clamp-1">{product.name}</h3>
-        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.description}</p>
+      <div className="p-6">
+        <Link href={`/products/${product.id}`} className="block">
+          <h3 className="text-lg font-semibold text-text-dark group-hover:text-accent-pink transition-colors duration-300 line-clamp-1">
+            {product.name}
+          </h3>
+          <p className="mt-2 text-text-light line-clamp-2 group-hover:text-text-dark transition-colors duration-300">
+            {product.description}
+          </p>
+        </Link>
         
-        <div className="mt-4 flex items-center justify-between">
-          <span className="font-semibold">{formatCurrency(product.price)}</span>
-          
-          <Button 
-            onClick={handleAddToCart} 
-            size="sm" 
-            disabled={product.inventory_count <= 0}
+        <div className="mt-6 flex items-center justify-between">
+          <p className="text-xl font-bold text-accent-pink">
+            ${product.price.toFixed(2)}
+          </p>
+          <button
+            onClick={handleAddToCart}
+            disabled={isLoading}
+            className="px-6 py-2.5 bg-primary-pink text-text-dark font-medium rounded-full hover:bg-dark-pink hover:text-white transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            Add to Cart
-          </Button>
+            {isLoading ? (
+              <span className="flex items-center space-x-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Adding...</span>
+              </span>
+            ) : (
+              <span className="flex items-center space-x-2">
+                <ShoppingCart className="h-4 w-4" />
+                <span>Add to Cart</span>
+              </span>
+            )}
+          </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

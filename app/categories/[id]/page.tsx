@@ -10,7 +10,7 @@ import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function CategoryDetailPage({ params }: { params: { id: string } }) {
+export default function CategoryDetailPage({ params }: { params: { id: string | number } }) {
   const { id } = params;
   const { data: category, isLoading: categoryLoading } = useCategory(id);
   const { data: products, isLoading: productsLoading } = useProductsByCategory(id);

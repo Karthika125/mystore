@@ -26,7 +26,8 @@ export default function AdminProductsPage() {
     price: "",
     inventory_count: "",
     category_id: "",
-    images: [""]
+    images: [""],
+    rating: 0
   });
 
   const [editingProduct, setEditingProduct] = useState<any>(null);
@@ -43,7 +44,8 @@ export default function AdminProductsPage() {
         ...newProduct,
         price: parseFloat(newProduct.price),
         inventory_count: parseInt(newProduct.inventory_count),
-        category_id: parseInt(newProduct.category_id)
+        category_id: newProduct.category_id,
+        rating: 0
       });
       setNewProduct({
         name: "",
@@ -51,7 +53,8 @@ export default function AdminProductsPage() {
         price: "",
         inventory_count: "",
         category_id: "",
-        images: [""]
+        images: [""],
+        rating: 0
       });
     } catch (error) {
       console.error('Error creating product:', error);
@@ -68,7 +71,8 @@ export default function AdminProductsPage() {
         ...editingProduct,
         price: parseFloat(editingProduct.price),
         inventory_count: parseInt(editingProduct.inventory_count),
-        category_id: parseInt(editingProduct.category_id)
+        category_id: editingProduct.category_id,
+        rating: editingProduct.rating || 0
       });
       setEditingProduct(null);
     } catch (error) {

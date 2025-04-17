@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -16,6 +16,12 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleEmailVerification = async () => {
       try {
+        if (!searchParams) {
+          setVerificationState('error');
+          setErrorMessage('Invalid verification URL');
+          return;
+        }
+
         // Get the verification token from the URL
         const token = searchParams.get('token');
         const type = searchParams.get('type');

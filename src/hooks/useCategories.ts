@@ -1,9 +1,9 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Category } from '@/types';
-import { toast } from '@/src/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export function useCategories() {
   return useQuery<Category[]>({
@@ -28,7 +28,7 @@ export function useCategories() {
   });
 }
 
-export function useCategory(id: string | undefined) {
+export function useCategory(id: string | number | undefined) {
   return useQuery<Category>({
     queryKey: ['category', id],
     queryFn: async () => {
@@ -93,7 +93,7 @@ export function useUpdateCategory() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, ...category }: Partial<Category> & { id: string }) => {
+    mutationFn: async ({ id, ...category }: Partial<Category> & { id: string | number }) => {
       const { data, error } = await supabase
         .from('categories')
         .update(category)
@@ -127,7 +127,7 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: string | number) => {
       const { error } = await supabase
         .from('categories')
         .delete()

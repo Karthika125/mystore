@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -28,10 +28,34 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+interface Order {
+  id: string;
+  user_id: string;
+  status: string;
+  total: number;
+  created_at: string;
+  profiles: { email: string }[];
+}
+
+interface Product {
+  id: string;
+  name: string;
+  inventory_count: number;
+}
+
+interface DashboardStats {
+  totalProducts: number;
+  totalOrders: number;
+  totalUsers: number;
+  totalRevenue: number;
+  recentOrders: Order[];
+  lowStockProducts: Product[];
+}
+
 export default function AdminDashboard() {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalOrders: 0,
     totalUsers: 0,

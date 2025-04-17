@@ -6,12 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format a number as currency (USD by default)
+ * Format a number as currency (INR by default)
  */
-export function formatCurrency(value: number, currency: string = 'USD', locale: string = 'en-US') {
+export function formatCurrency(value: number, currency: string = 'INR', locale: string = 'en-IN') {
   return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(value);
 }
 

@@ -66,4 +66,6 @@ export function CartItem({ item }: CartItemProps) {
       </div>
     </div>
   );
-} 
+}
+
+export default CartItem; 

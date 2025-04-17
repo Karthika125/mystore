@@ -20,6 +20,13 @@ const config = {
 		},
 		extend: {
 			colors: {
+				'primary-pink': '#FFB5C2',
+				'secondary-pink': '#FFD1DA',
+				'light-pink': '#FFF0F3',
+				'dark-pink': '#FF8FA3',
+				'accent-pink': '#FF4D6D',
+				'text-dark': '#4A4A4A',
+				'text-light': '#717171',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

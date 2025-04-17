@@ -1,9 +1,10 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
+import { useState, useEffect } from 'react';
 import { Product } from '@/types';
-import { toast } from '@/src/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/hooks/use-toast';
 
 export function useProducts() {
   return useQuery<Product[]>({

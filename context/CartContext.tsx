@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CartItem, Product } from "@/types";
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -26,31 +27,77 @@ export function useCart() {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { user } = useAuth();
 
-  // Load cart from localStorage on initial load
+  // Generate storage key based on user ID or use guest key
+  const storageKey = user ? `cart_${user.id}` : 'cart_guest';
+
+  // Load cart from localStorage on initial load and when user changes
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Failed to parse cart from localStorage:', error);
-        localStorage.removeItem('cart');
+    const loadCart = () => {
+      const savedCart = localStorage.getItem(storageKey);
+      if (savedCart) {
+        try {
+          const parsedCart = JSON.parse(savedCart);
+          setCartItems(parsedCart);
+          console.log('Loaded cart:', { storageKey, items: parsedCart });
+        } catch (error) {
+          console.error('Failed to parse cart from localStorage:', error);
+          localStorage.removeItem(storageKey);
+          setCartItems([]);
+        }
+      } else {
+        setCartItems([]);
       }
-    }
-  }, []);
+    };
+
+    loadCart();
+  }, [storageKey]); // Re-run when user changes (storageKey changes)
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    console.log('Saving cart:', { storageKey, items: cartItems });
+    localStorage.setItem(storageKey, JSON.stringify(cartItems));
+  }, [cartItems, storageKey]);
+
+  // Transfer guest cart to user cart on login
+  useEffect(() => {
+    if (user) {
+      const guestCart = localStorage.getItem('cart_guest');
+      if (guestCart) {
+        try {
+          const parsedGuestCart = JSON.parse(guestCart);
+          if (parsedGuestCart.length > 0) {
+            setCartItems(prevItems => {
+              // Merge guest cart with user cart, avoiding duplicates
+              const newItems = [...prevItems];
+              parsedGuestCart.forEach((guestItem: CartItem) => {
+                const existingItemIndex = newItems.findIndex(
+                  item => item.product.id === guestItem.product.id
+                );
+                if (existingItemIndex >= 0) {
+                  newItems[existingItemIndex].quantity += guestItem.quantity;
+                } else {
+                  newItems.push(guestItem);
+                }
+              });
+              return newItems;
+            });
+            // Clear guest cart after merging
+            localStorage.removeItem('cart_guest');
+          }
+        } catch (error) {
+          console.error('Failed to merge guest cart:', error);
+        }
+      }
+    }
+  }, [user]);
 
   const addToCart = (product: Product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find(item => item.product.id === product.id);
       
       if (existingItem) {
-        // Check inventory before adding more
         const newQuantity = existingItem.quantity + quantity;
         if (newQuantity > product.inventory_count) {
           toast({
@@ -61,13 +108,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
           return prevItems;
         }
         
-        return prevItems.map(item => 
+        const updatedItems = prevItems.map(item => 
           item.product.id === product.id 
             ? { ...item, quantity: newQuantity }
             : item
         );
+        return updatedItems;
       } else {
-        // Check inventory before adding new item
         if (quantity > product.inventory_count) {
           toast({
             title: "Inventory limit reached",

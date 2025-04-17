@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,13 +19,13 @@ export default function ResetPassword() {
 
   // Check if we have the correct parameters in the URL
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams?.get('token');
   
   useEffect(() => {
     if (!token) {
-      setError('Invalid password reset link. Please request a new password reset.');
+      router.push('/auth');
     }
-  }, [token]);
+  }, [token, router]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,5 +1,6 @@
 
-import ProductCard from '@/components/ProductCard';
+import ProductCard from './ProductCard';
+
 import { Product } from '@/types';
 import { Loader2 } from 'lucide-react';
 

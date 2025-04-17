@@ -23,7 +23,8 @@ export default function AdminCategoriesPage() {
   const [newCategory, setNewCategory] = useState({
     name: "",
     description: "",
-    image: ""
+    image: "",
+    created_at: new Date().toISOString()
   });
 
   const [editingCategory, setEditingCategory] = useState<any>(null);
@@ -40,7 +41,8 @@ export default function AdminCategoriesPage() {
       setNewCategory({
         name: "",
         description: "",
-        image: ""
+        image: "",
+        created_at: new Date().toISOString()
       });
     } catch (error) {
       console.error('Error creating category:', error);

@@ -1,11 +1,11 @@
-import { Layout } from "@/src/components/Layout";
+import Layout from "@/components/Layout";
 import { Providers } from "./providers";
-import "@/styles/globals.css";
+import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bloom Basket Admin",
-  description: "Admin dashboard for Bloom Basket e-commerce",
+  title: "Mystore",
+  description: "Your one-stop destination for all your shopping needs",
 };
 
 export default function RootLayout({

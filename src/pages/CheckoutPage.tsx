@@ -12,7 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils';
 import Layout from '@/components/Layout';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),

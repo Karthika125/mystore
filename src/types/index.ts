@@ -1,19 +1,20 @@
-
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
   images: string[];
-  category_id: string | null;
-  created_at: string;
+  category_id: string;
   inventory_count: number;
+  rating: number;
+  created_at: string;
 }
 
 export interface Category {
-  id: string;
+  id: string | number;
   name: string;
-  description?: string | null;
+  description?: string;
+  image?: string;
   created_at: string;
 }
 
@@ -29,6 +30,7 @@ export interface Order {
   total: number;
   created_at: string;
   items: OrderItem[];
+  shipping_address: Address;
 }
 
 export interface OrderItem {
@@ -38,10 +40,25 @@ export interface OrderItem {
   product_name: string;
   product_price: number;
   quantity: number;
+  product?: Product;
 }
 
 export interface User {
   id: string;
   email: string;
-  role: 'admin' | 'customer';
+  role: string;
+}
+
+export interface Address {
+  id?: string;
+  user_id?: string;
+  full_name: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  phone: string;
+  is_default?: boolean;
 }

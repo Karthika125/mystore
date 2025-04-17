@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -16,6 +18,14 @@ const nextConfig = {
       },
     ],
   },
+  // Configure webpack to resolve alias @ to the src folder
+  webpack(config) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'), // Resolving @ to the src folder
+    };
+    return config;
+  },
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig;

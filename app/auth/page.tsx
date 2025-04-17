@@ -19,7 +19,7 @@ export default function AuthPage() {
   const { signIn, signUp, isVerificationEmailSent, resetPasswordWithEmail } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
+  const redirect = searchParams?.get('redirect') || '/';
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

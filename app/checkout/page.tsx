@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Check, Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 

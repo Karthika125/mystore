@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Category } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -9,22 +9,38 @@ export function useCategories() {
   return useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
+      console.log('Fetching categories...');
+      try {
+        const { data, error, status } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name');
+          
+        console.log('Categories response:', { data, error, status });
         
-      if (error) {
-        toast({
-          title: "Error loading categories",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error) {
+          console.error('Error fetching categories:', error);
+          toast({
+            title: "Error loading categories",
+            description: error.message,
+            variant: "destructive",
+          });
+          throw error;
+        }
+        
+        if (!data) {
+          console.log('No categories found');
+          return [];
+        }
+        
+        console.log(`Found ${data.length} categories`);
+        return data;
+      } catch (error) {
+        console.error('Unexpected error in useCategories:', error);
         throw error;
       }
-      
-      return data || [];
     },
+    retry: 1,
   });
 }
 

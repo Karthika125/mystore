@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from "@/src/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { User } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -12,6 +12,8 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
+  isVerificationEmailSent: boolean;
+  resetPasswordWithEmail: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +29,7 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVerificationEmailSent, setIsVerificationEmailSent] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -120,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw error;
       }
       
+      setIsVerificationEmailSent(true);
       toast({
         title: "Account created",
         description: "Please check your email to verify your account",
@@ -152,6 +156,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = user?.role === 'admin';
 
+  const resetPasswordWithEmail = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+      toast({
+        title: "Password reset email sent",
+        description: "Please check your email for the password reset link",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Password reset failed",
+        description: error?.message || "An error occurred while sending the reset email",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -160,6 +182,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signUp,
       signOut,
       isAdmin,
+      isVerificationEmailSent,
+      resetPasswordWithEmail,
     }}>
       {children}
     </AuthContext.Provider>

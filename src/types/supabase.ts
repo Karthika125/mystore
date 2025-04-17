@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -16,18 +15,21 @@ export interface Database {
           description: string | null
           id: string
           name: string
+          image: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
           name: string
+          image?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
           name?: string
+          image?: string | null
         }
       }
       order_items: {

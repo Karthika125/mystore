@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Product } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -9,22 +9,38 @@ export function useProducts() {
   return useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+      console.log('Fetching products...');
+      try {
+        const { data, error, status } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        console.log('Products response:', { data, error, status });
         
-      if (error) {
-        toast({
-          title: "Error loading products",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error) {
+          console.error('Error fetching products:', error);
+          toast({
+            title: "Error loading products",
+            description: error.message,
+            variant: "destructive",
+          });
+          throw error;
+        }
+        
+        if (!data) {
+          console.log('No products found');
+          return [];
+        }
+        
+        console.log(`Found ${data.length} products`);
+        return data;
+      } catch (error) {
+        console.error('Unexpected error in useProducts:', error);
         throw error;
       }
-      
-      return data || [];
     },
+    retry: 1,
   });
 }
 

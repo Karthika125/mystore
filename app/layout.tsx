@@ -1,6 +1,9 @@
-import Layout from "@/components/Layout";
-import { Providers } from "./providers";
-import "./globals.css";
+import Layout from '@/components/Layout';
+import { Providers } from './providers';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/context/AuthContext';
+import { CartProvider } from '@/context/CartContext';
+import './globals.css';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,7 +20,14 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <Layout>{children}</Layout>
+          <AuthProvider>
+            <CartProvider>
+              <Layout>
+                {children}
+                <Toaster />
+              </Layout>
+            </CartProvider>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

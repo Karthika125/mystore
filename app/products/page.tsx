@@ -155,7 +155,7 @@ export default function ProductsPage() {
           {categories?.map((category) => (
             <button
               key={category.id}
-              className={`px-4 py-2 whitespace-nowrap rounded-full transition-all ${
+              className={`px-4 py-2 whitespace-nowrap rounded-full transition-all $image.png{
                 selectedCategory === category.id.toString()
                   ? 'bg-accent-pink text-white'
                   : 'bg-white border border-primary-pink/20 hover:border-accent-pink'

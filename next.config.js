@@ -10,7 +10,7 @@ const nextConfig = {
   output: 'standalone',
   // Add image domains if needed
   images: {
-    domains: ['localhost'],
+    domains: ['example.com', 'nzwwcituvkxkqvbiavcq.supabase.co'],
     remotePatterns: [
       {
         protocol: 'https',

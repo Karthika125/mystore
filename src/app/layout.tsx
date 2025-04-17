@@ -1,25 +1,35 @@
+'use client';
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "../components/Providers";
+import { Providers } from "./providers";
+import Layout from '@/components/Layout';
+import { CartProvider } from '@/context/CartContext';
+import { Toaster } from '@/components/ui/toaster';
 
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Bloom Basket Admin",
-  description: "Admin dashboard for Bloom Basket",
+  title: "Mystore",
+  description: "Your one-stop shop for all your needs",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <CartProvider>
+          <Providers>
+            <Layout>{children}</Layout>
+          </Providers>
+          <Toaster />
+        </CartProvider>
       </body>
     </html>
   );

@@ -9,27 +9,59 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      categories: {
+      products: {
         Row: {
-          created_at: string
-          description: string | null
           id: string
           name: string
-          image: string | null
+          description: string | null
+          price: number
+          images: string[] | null
+          category_id: string | null
+          created_at: string
+          inventory_count: number
         }
         Insert: {
-          created_at?: string
-          description?: string | null
           id?: string
           name: string
-          image?: string | null
+          description?: string | null
+          price: number
+          images?: string[] | null
+          category_id?: string | null
+          created_at?: string
+          inventory_count?: number
         }
         Update: {
-          created_at?: string
-          description?: string | null
           id?: string
           name?: string
+          description?: string | null
+          price?: number
+          images?: string[] | null
+          category_id?: string | null
+          created_at?: string
+          inventory_count?: number
+        }
+      }
+      categories: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          image: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
           image?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          image?: string | null
+          created_at?: string
         }
       }
       order_items: {
@@ -79,38 +111,6 @@ export interface Database {
           status?: string
           total?: number
           user_id?: string
-        }
-      }
-      products: {
-        Row: {
-          category_id: string | null
-          created_at: string
-          description: string
-          id: string
-          images: string[]
-          inventory_count: number
-          name: string
-          price: number
-        }
-        Insert: {
-          category_id?: string | null
-          created_at?: string
-          description: string
-          id?: string
-          images?: string[]
-          inventory_count?: number
-          name: string
-          price: number
-        }
-        Update: {
-          category_id?: string | null
-          created_at?: string
-          description?: string
-          id?: string
-          images?: string[]
-          inventory_count?: number
-          name?: string
-          price?: number
         }
       }
       profiles: {

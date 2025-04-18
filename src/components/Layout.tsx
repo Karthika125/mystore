@@ -15,6 +15,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isAdmin, signOut } = useAuth();
   const pathname = usePathname();
 
+  const cartItemCount = cartCount;
+
+  const isActive = (path: string) => pathname === path;
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -78,13 +82,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 )}
                 
-                <Link href="/cart" className="relative text-white hover:opacity-90 transition-opacity">
+                <Link
+                  href="/cart"
+                  className="relative text-white hover:opacity-90 transition-opacity"
+                >
                   <div className="flex items-center gap-2">
                     <ShoppingCart className="h-5 w-5" />
                     <span>Cart</span>
-                    {cartCount > 0 && (
+                    {cartItemCount > 0 && (
                       <span className="absolute -top-2 -right-2 bg-white text-accent-pink text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {cartCount}
+                        {cartItemCount}
                       </span>
                     )}
                   </div>
@@ -104,17 +111,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="border-b border-primary-pink/10">
           <div className="modern-container py-2">
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className={`nav-link ${pathname === '/' ? 'text-accent-pink' : ''}`}>
+              <Link
+                href="/"
+                className={`nav-link ${isActive('/') ? 'text-accent-pink' : ''}`}
+              >
                 Home
               </Link>
-              <Link href="/products" className={`nav-link ${pathname === '/products' ? 'text-accent-pink' : ''}`}>
+              <Link
+                href="/products"
+                className={`nav-link ${isActive('/products') ? 'text-accent-pink' : ''}`}
+              >
                 Products
               </Link>
-              <Link href="/categories" className={`nav-link ${pathname === '/categories' ? 'text-accent-pink' : ''}`}>
+              <Link
+                href="/categories"
+                className={`nav-link ${isActive('/categories') ? 'text-accent-pink' : ''}`}
+              >
                 Categories
               </Link>
               {isAdmin && (
-                <Link href="/admin" className={`nav-link ${pathname?.startsWith('/admin') ? 'text-accent-pink' : ''}`}>
+                <Link
+                  href="/admin"
+                  className={`nav-link ${pathname?.startsWith('/admin') ? 'text-accent-pink' : ''}`}
+                >
                   Admin
                 </Link>
               )}
@@ -128,21 +147,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <nav className="modern-container py-4 flex flex-col space-y-4">
               <Link 
                 href="/" 
-                className={`nav-link px-2 py-1 rounded-lg ${pathname === '/' ? 'bg-light-pink text-accent-pink' : ''}`}
+                className={`nav-link px-2 py-1 rounded-lg ${isActive('/') ? 'bg-light-pink text-accent-pink' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 href="/products" 
-                className={`nav-link px-2 py-1 rounded-lg ${pathname === '/products' ? 'bg-light-pink text-accent-pink' : ''}`}
+                className={`nav-link px-2 py-1 rounded-lg ${isActive('/products') ? 'bg-light-pink text-accent-pink' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Products
               </Link>
               <Link 
                 href="/categories" 
-                className={`nav-link px-2 py-1 rounded-lg ${pathname === '/categories' ? 'bg-light-pink text-accent-pink' : ''}`}
+                className={`nav-link px-2 py-1 rounded-lg ${isActive('/categories') ? 'bg-light-pink text-accent-pink' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Categories
@@ -151,14 +170,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <>
                   <Link 
                     href="/account" 
-                    className={`nav-link px-2 py-1 rounded-lg ${pathname === '/account' ? 'bg-light-pink text-accent-pink' : ''}`}
+                    className={`nav-link px-2 py-1 rounded-lg ${isActive('/account') ? 'bg-light-pink text-accent-pink' : ''}`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Account
                   </Link>
                   <Link 
                     href="/orders" 
-                    className={`nav-link px-2 py-1 rounded-lg ${pathname === '/orders' ? 'bg-light-pink text-accent-pink' : ''}`}
+                    className={`nav-link px-2 py-1 rounded-lg ${isActive('/orders') ? 'bg-light-pink text-accent-pink' : ''}`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Orders

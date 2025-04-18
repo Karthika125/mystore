@@ -1,19 +1,14 @@
-'use client';
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import Layout from '@/components/Layout';
-import { CartProvider } from '@/context/CartContext';
-import { Toaster } from '@/components/ui/toaster';
-
+import ClientLayout from '@/components/ClientLayout';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Mystore",
-  description: "Your one-stop shop for all your needs",
+  description: "Your one-stop destination for all your shopping needs.",
 };
 
 export default function RootLayout({
@@ -24,12 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <CartProvider>
-          <Providers>
-            <Layout>{children}</Layout>
-          </Providers>
-          <Toaster />
-        </CartProvider>
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

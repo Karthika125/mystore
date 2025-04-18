@@ -1,87 +1,92 @@
+'use client';
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Trash } from 'lucide-react';
+import React from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CartItem as CartItemType } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { formatCurrency } from '@/lib/utils';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 
 interface CartItemProps {
-  item: CartItemType;
+  item: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+  };
 }
 
-export default function CartItemComponent({ item }: CartItemProps) {
-  const { product, quantity } = item;
+export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeFromCart } = useCart();
-  const [isRemoving, setIsRemoving] = useState(false);
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newQuantity = parseInt(e.target.value);
-    updateQuantity(product.id, newQuantity);
+  const handleIncrement = () => {
+    updateQuantity(item.id, item.quantity + 1);
   };
 
-  const handleRemove = () => {
-    setIsRemoving(true);
-    setTimeout(() => {
-      removeFromCart(product.id);
-    }, 300);
+  const handleDecrement = () => {
+    if (item.quantity > 1) {
+      updateQuantity(item.id, item.quantity - 1);
+    }
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value >= 1) {
+      updateQuantity(item.id, value);
+    }
   };
 
   return (
-    <div className={`flex py-6 border-b transition-opacity ${isRemoving ? 'opacity-0' : 'opacity-100'}`}>
-      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
-        {product.images && product.images.length > 0 ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="h-full w-full object-cover object-center"
+    <div className="flex items-center gap-4 p-4 border rounded-lg bg-white/50 backdrop-blur-sm">
+      {item.image && (
+        <div className="relative w-20 h-20 flex-shrink-0">
+          <Image
+            src={item.image}
+            alt={item.name}
+            fill
+            className="object-cover rounded-md"
           />
-        ) : (
-          <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-            <span className="text-xs text-gray-400">No image</span>
-          </div>
-        )}
-      </div>
-
-      <div className="ml-4 flex flex-1 flex-col">
-        <div className="flex justify-between">
-          <Link to={`/products/${product.id}`} className="hover:text-primary">
-            <h3 className="font-medium">{product.name}</h3>
-          </Link>
-          <p className="text-gray-900 font-medium">{formatCurrency(product.price * quantity)}</p>
         </div>
-
-        <div className="mt-4 flex justify-between">
-          <div className="flex items-center">
-            <label htmlFor={`quantity-${product.id}`} className="mr-2 text-sm text-gray-600">
-              Qty
-            </label>
-            <select
-              id={`quantity-${product.id}`}
-              name="quantity"
-              value={quantity}
-              onChange={handleQuantityChange}
-              className="rounded border-gray-300 py-1 px-2 text-sm"
-            >
-              {Array.from({ length: Math.min(10, product.inventory_count) }, (_, i) => i + 1).map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
-
+      )}
+      <div className="flex-1">
+        <h3 className="font-semibold text-lg">{item.name}</h3>
+        <p className="text-gray-600">${item.price.toFixed(2)}</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center border rounded-lg">
           <Button
             variant="ghost"
-            size="sm"
-            onClick={handleRemove}
-            className="text-red-500 hover:text-red-600 hover:bg-red-50 flex items-center gap-1"
+            size="icon"
+            className="h-8 w-8"
+            onClick={handleDecrement}
+            disabled={item.quantity <= 1}
           >
-            <Trash className="h-4 w-4" />
-            <span className="text-sm">Remove</span>
+            <Minus className="h-4 w-4" />
+          </Button>
+          <input
+            type="number"
+            min="1"
+            value={item.quantity}
+            onChange={handleQuantityChange}
+            className="w-12 text-center border-none focus:outline-none focus:ring-0"
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={handleIncrement}
+          >
+            <Plus className="h-4 w-4" />
           </Button>
         </div>
+        <Button 
+          variant="destructive" 
+          size="icon"
+          onClick={() => removeFromCart(item.id)}
+          className="h-8 w-8"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

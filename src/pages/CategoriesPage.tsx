@@ -1,5 +1,4 @@
-
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useCategories } from '@/hooks/useCategories';
 import CategoryCard from '@/components/CategoryCard';
 import Layout from '@/components/Layout';

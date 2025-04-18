@@ -10,7 +10,7 @@ const nextConfig = {
   output: 'standalone',
   // Add image domains if needed
   images: {
-    domains: ['example.com', 'nzwwcituvkxkqvbiavcq.supabase.co'],
+    domains: ['nzwwcituvkxkqvbiavcq.supabase.co'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -25,6 +25,9 @@ const nextConfig = {
       '@': path.resolve(__dirname, 'src'), // Resolving @ to the src folder
     };
     return config;
+  },
+  experimental: {
+    serverActions: true,
   },
 }
 

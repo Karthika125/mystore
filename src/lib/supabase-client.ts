@@ -6,12 +6,8 @@ import { Database } from '@/types/supabase'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-if (!supabaseUrl) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL')
-}
-
-if (!supabaseAnonKey) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY')
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables')
 }
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -27,8 +23,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 if (typeof window !== 'undefined') {
   supabase.auth.getSession().then(({ data: { session } }) => {
     console.log('Current session state:', session ? 'Logged in' : 'Not logged in')
-  }).catch(error => {
-    console.error('Error checking session:', error)
   })
 }
 

@@ -1,14 +1,14 @@
-import Layout from '@/components/Layout';
-import { Providers } from './providers';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/context/AuthContext';
-import { CartProvider } from '@/context/CartContext';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import type { Metadata } from "next";
+import Layout from '@/components/Layout';
+import { Providers } from '@/components/Providers';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Mystore",
-  description: "Your one-stop destination for all your shopping needs",
+  title: 'MyStore - Your Premium Shopping Destination',
+  description: 'Discover quality products at great prices',
 };
 
 export default function RootLayout({
@@ -18,16 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         <Providers>
-          <AuthProvider>
-            <CartProvider>
-              <Layout>
-                {children}
-                <Toaster />
-              </Layout>
-            </CartProvider>
-          </AuthProvider>
+          <Layout>
+            {children}
+          </Layout>
         </Providers>
       </body>
     </html>

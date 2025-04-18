@@ -15,7 +15,7 @@ export interface Database {
           name: string
           description: string | null
           price: number
-          images: string[] | null
+          images: string[]
           category_id: string | null
           created_at: string
           inventory_count: number
@@ -25,17 +25,17 @@ export interface Database {
           name: string
           description?: string | null
           price: number
-          images?: string[] | null
+          images: string[]
           category_id?: string | null
           created_at?: string
-          inventory_count?: number
+          inventory_count: number
         }
         Update: {
           id?: string
           name?: string
           description?: string | null
           price?: number
-          images?: string[] | null
+          images?: string[]
           category_id?: string | null
           created_at?: string
           inventory_count?: number
@@ -64,76 +64,81 @@ export interface Database {
           created_at?: string
         }
       }
+      orders: {
+        Row: {
+          id: string
+          user_id: string
+          status: string
+          total: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          status?: string
+          total: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          status?: string
+          total?: number
+          created_at?: string
+        }
+      }
       order_items: {
         Row: {
           id: string
           order_id: string
           product_id: string
-          product_name: string
-          product_price: number
           quantity: number
+          price: number
         }
         Insert: {
           id?: string
           order_id: string
           product_id: string
-          product_name: string
-          product_price: number
           quantity: number
+          price: number
         }
         Update: {
           id?: string
           order_id?: string
           product_id?: string
-          product_name?: string
-          product_price?: number
           quantity?: number
-        }
-      }
-      orders: {
-        Row: {
-          created_at: string
-          id: string
-          status: string
-          total: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          status?: string
-          total?: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          status?: string
-          total?: number
-          user_id?: string
+          price?: number
         }
       }
       profiles: {
         Row: {
-          email: string
           id: string
+          email: string
           role: string
+          created_at: string
         }
         Insert: {
-          email: string
           id: string
+          email: string
           role?: string
+          created_at?: string
         }
         Update: {
-          email?: string
           id?: string
+          email?: string
           role?: string
+          created_at?: string
         }
       }
     }
-    Views: {}
-    Functions: {}
-    Enums: {}
-    CompositeTypes: {}
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
   }
 }

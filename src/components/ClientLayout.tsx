@@ -19,14 +19,14 @@ export default function ClientLayout({
 }) {
   return (
     <SupabaseProvider>
-      <CartProvider>
-        <CartSyncWrapper>
-          <Providers>
+      <Providers>
+        <CartProvider>
+          <CartSyncWrapper>
             <Layout>{children}</Layout>
             <Toaster />
-          </Providers>
-        </CartSyncWrapper>
-      </CartProvider>
+          </CartSyncWrapper>
+        </CartProvider>
+      </Providers>
     </SupabaseProvider>
   );
 } 

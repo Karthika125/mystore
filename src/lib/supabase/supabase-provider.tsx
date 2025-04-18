@@ -1,13 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import { createContext, useContext, useEffect } from 'react';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Database } from '@/types/supabase';
+import { supabase } from '../supabase-client';
 
 interface SupabaseContext {
-  supabase: SupabaseClient;
+  supabase: SupabaseClient<Database>;
 }
 
 const Context = createContext<SupabaseContext | undefined>(undefined);
@@ -17,14 +16,19 @@ export default function SupabaseProvider({
 }: { 
   children: React.ReactNode;
 }) {
-  const [supabase] = useState(() => createClient(supabaseUrl, supabaseAnonKey));
-
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {});
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        console.log('User signed in:', session?.user?.email);
+      } else if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+      }
+    });
+
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   return (
     <Context.Provider value={{ supabase }}>

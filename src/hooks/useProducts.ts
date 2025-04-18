@@ -5,21 +5,24 @@ import { useState, useEffect } from 'react';
 import { Product } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
+import type { Tables } from '@/lib/supabase';
 
 export function useProducts() {
-  return useQuery<Product[]>({
+  return useQuery<Tables['products'][]>({
     queryKey: ['products'],
     queryFn: async () => {
+      console.log('🔍 Fetching products from Supabase...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching products:', error);
-        throw new Error(error.message);
+        console.error('❌ Error fetching products:', error);
+        throw error;
       }
       
+      console.log('✅ Successfully fetched', data?.length || 0, 'products');
       return data || [];
     },
   });
@@ -33,6 +36,7 @@ export function useProduct(id: string | undefined) {
         throw new Error('Product ID is required');
       }
       
+      console.log(`🔍 Fetching product details for ID: ${id}`);
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -40,9 +44,11 @@ export function useProduct(id: string | undefined) {
         .single();
         
       if (error) {
-        throw new Error(error.message);
+        console.error(`❌ Error fetching product ${id}:`, error);
+        throw error;
       }
       
+      console.log('✅ Successfully fetched product:', data?.name);
       return data;
     },
     enabled: !!id,

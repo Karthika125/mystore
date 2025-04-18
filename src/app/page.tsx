@@ -1,196 +1,131 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Product, Category } from '@/types';
-import { useCart } from '@/context/CartContext';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ShoppingCart } from 'lucide-react';
-import Link from 'next/link';
+import Link from 'next/link'
+import Image from 'next/image'
+import { useProducts } from '@/hooks/useProducts'
+import { useCategories } from '@/hooks/useCategories'
+import ProductGrid from '@/components/ProductGrid'
+import { Button } from '@/components/ui/button'
 
 export default function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState({
-    products: true,
-    categories: true
-  });
-  const [error, setError] = useState<string | null>(null);
-  const { addToCart } = useCart();
+  const { data: products, isLoading: isLoadingProducts } = useProducts()
+  const { data: categories, isLoading: isLoadingCategories } = useCategories()
 
-  useEffect(() => {
-    async function fetchData() {
-      console.log('🔄 Starting data fetch...');
-      try {
-        // Fetch products
-        console.log('📦 Fetching products...');
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
+  console.log('Products loaded:', products?.length || 0, 'items')
+  console.log('Categories loaded:', categories?.length || 0, 'items')
 
-        if (productsError) {
-          console.error('❌ Error fetching products:', productsError);
-          setError(productsError.message);
-          toast({
-            title: "Error",
-            description: "Failed to load products. Please try again.",
-            variant: "destructive",
-          });
-        } else {
-          console.log('✅ Products fetched successfully:', productsData?.length || 0, 'items');
-          setProducts(productsData || []);
-        }
-
-        // Fetch categories
-        console.log('🗂️ Fetching categories...');
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from('categories')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (categoriesError) {
-          console.error('❌ Error fetching categories:', categoriesError);
-          setError(categoriesError.message);
-          toast({
-            title: "Error",
-            description: "Failed to load categories. Please try again.",
-            variant: "destructive",
-          });
-        } else {
-          console.log('✅ Categories fetched successfully:', categoriesData?.length || 0, 'items');
-          setCategories(categoriesData || []);
-        }
-      } catch (error) {
-        console.error('❌ Unexpected error:', error);
-        setError(error instanceof Error ? error.message : 'An unexpected error occurred');
-        toast({
-          title: "Error",
-          description: "Something went wrong. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading({
-          products: false,
-          categories: false
-        });
-        console.log('🏁 Data fetch complete');
-      }
+  const sections = [
+    {
+      title: "Appliances for your home | Up to 55% off",
+      items: [
+        { name: "Air conditioners", image: "/images/categories/ac.jpg", link: "/products?category=ac" },
+        { name: "Refrigerators", image: "/images/categories/fridge.jpg", link: "/products?category=refrigerators" },
+        { name: "Microwaves", image: "/images/categories/microwave.jpg", link: "/products?category=microwaves" },
+        { name: "Washing machines", image: "/images/categories/washer.jpg", link: "/products?category=washers" }
+      ]
+    },
+    {
+      title: "Starting ₹149 | Headphones",
+      items: [
+        { name: "boAt", image: "/images/brands/boat.jpg", link: "/products?brand=boat" },
+        { name: "Boult", image: "/images/brands/boult.jpg", link: "/products?brand=boult" },
+        { name: "Noise", image: "/images/brands/noise.jpg", link: "/products?brand=noise" },
+        { name: "Zebronics", image: "/images/brands/zebronics.jpg", link: "/products?brand=zebronics" }
+      ]
+    },
+    {
+      title: "Automotive essentials | Up to 60% off",
+      items: [
+        { name: "Cleaning accessories", image: "/images/auto/cleaning.jpg", link: "/products?category=auto-cleaning" },
+        { name: "Tyre & rim care", image: "/images/auto/tyre.jpg", link: "/products?category=tyre-care" },
+        { name: "Helmets", image: "/images/auto/helmet.jpg", link: "/products?category=helmets" },
+        { name: "Vacuum cleaner", image: "/images/auto/vacuum.jpg", link: "/products?category=auto-vacuum" }
+      ]
     }
-
-    fetchData();
-  }, []);
-
-  const handleAddToCart = (product: Product) => {
-    addToCart(product);
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
-  };
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Data</h2>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <Button 
-          onClick={() => window.location.reload()}
-          className="bg-pink-600 hover:bg-pink-700 text-white"
-        >
-          Try Again
-        </Button>
-      </div>
-    );
-  }
+  ]
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <section className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Featured Products</h2>
-          <Link href="/products" className="text-pink-600 hover:text-pink-700">
-            View All Products →
-          </Link>
+    <main className="min-h-screen bg-gray-100">
+      {/* Hero Banner */}
+      <div className="relative h-[300px] bg-gradient-to-r from-blue-600 to-blue-400">
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <div className="text-white max-w-xl">
+            <h1 className="text-4xl font-bold mb-4">Welcome to MyStore</h1>
+            <p className="text-xl mb-6">Discover amazing deals on all your favorite products</p>
+            <Button size="lg" asChild>
+              <Link href="/products">Shop Now</Link>
+            </Button>
+          </div>
         </div>
-        {loading.products ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.slice(0, 4).map((product) => (
-              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="relative h-48">
-                  <img
-                    src={product.images?.[0] || '/placeholder.png'}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                  <p className="text-gray-600 mb-2">${product.price.toFixed(2)}</p>
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">{product.description}</p>
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full bg-pink-600 hover:bg-pink-700 text-white"
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      </div>
 
-      <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Categories</h2>
-          <Link href="/categories" className="text-pink-600 hover:text-pink-700">
-            View All Categories →
-          </Link>
-        </div>
-        {loading.categories ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-4 w-1/2" />
+      {/* Grid Sections */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sections.map((section, idx) => (
+            <div key={idx} className="bg-white p-4 rounded-lg shadow">
+              <h2 className="text-xl font-bold mb-4">{section.title}</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {section.items.map((item, itemIdx) => (
+                  <Link key={itemIdx} href={item.link} className="group">
+                    <div className="aspect-square relative overflow-hidden rounded-md">
+                      <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                      {/* Add Image component when images are available */}
+                    </div>
+                    <p className="mt-2 text-sm text-gray-600 group-hover:text-blue-600">{item.name}</p>
+                  </Link>
+                ))}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/categories/${category.id}`}
-                className="group relative h-32 overflow-hidden rounded-lg"
-              >
-                <img
-                  src={category.image || '/placeholder.png'}
-                  alt={category.name}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <h3 className="text-white text-xl font-semibold">{category.name}</h3>
-                </div>
+              <Link href="/products" className="text-blue-600 hover:underline text-sm mt-4 block">
+                See all offers
               </Link>
-            ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Featured Products */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
+          <ProductGrid 
+            products={products?.slice(0, 8)} 
+            isLoading={isLoadingProducts} 
+          />
+        </div>
+
+        {/* Categories */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {isLoadingCategories ? (
+              Array(6).fill(0).map((_, i) => (
+                <div key={i} className="aspect-square bg-gray-200 rounded-lg animate-pulse" />
+              ))
+            ) : (
+              categories?.slice(0, 6).map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/products?category=${category.id}`}
+                  className="group"
+                >
+                  <div className="aspect-square relative overflow-hidden rounded-lg">
+                    {category.image && (
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <p className="mt-2 text-center font-medium group-hover:text-blue-600">
+                    {category.name}
+                  </p>
+                </Link>
+              ))
+            )}
           </div>
-        )}
-      </section>
+        </div>
+      </div>
     </main>
-  );
+  )
 } 

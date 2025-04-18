@@ -9,12 +9,14 @@ export function useCategories() {
   return useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: async () => {
+      console.log('🔍 Fetching categories from Supabase...');
       const { data, error } = await supabase
         .from('categories')
         .select('*')
         .order('name');
         
       if (error) {
+        console.error('❌ Error fetching categories:', error);
         toast({
           title: "Error loading categories",
           description: error.message,
@@ -23,6 +25,7 @@ export function useCategories() {
         throw error;
       }
       
+      console.log('✅ Successfully fetched', data?.length || 0, 'categories');
       return data || [];
     },
   });
@@ -36,6 +39,7 @@ export function useCategory(id: string | number | undefined) {
         throw new Error('Category ID is required');
       }
       
+      console.log(`🔍 Fetching category details for ID: ${id}`);
       const { data, error } = await supabase
         .from('categories')
         .select('*')
@@ -43,6 +47,7 @@ export function useCategory(id: string | number | undefined) {
         .single();
         
       if (error) {
+        console.error(`❌ Error fetching category ${id}:`, error);
         toast({
           title: "Error loading category",
           description: error.message,
@@ -51,6 +56,7 @@ export function useCategory(id: string | number | undefined) {
         throw error;
       }
       
+      console.log('✅ Successfully fetched category:', data?.name);
       return data;
     },
     enabled: !!id,

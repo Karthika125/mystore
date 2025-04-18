@@ -1,47 +1,108 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Layout } from '@/components/Layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useSupabase } from '@/lib/supabase/supabase-provider';
 import { toast } from '@/hooks/use-toast';
 
 export default function AuthPage() {
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const redirectPath = searchParams.get('redirect') || '/';
+  const { supabase } = useSupabase();
+  
+  // Form states
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [activeTab, setActiveTab] = useState('login');
+  
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  
+  // Register form state
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle login submission
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
+    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      setIsLoading(true);
+      
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword
       });
-
+      
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
+        throw error;
       }
-
-      if (data.user) {
-        toast({
-          title: "Success",
-          description: "Successfully signed in!",
-        });
-        router.push('/'); // Redirect to home page
-        router.refresh();
-      }
-    } catch (error) {
+      
       toast({
-        title: "Error",
-        description: "An unexpected error occurred",
+        title: "Successfully logged in",
+        description: "You have been successfully logged in",
+      });
+      
+      router.push(redirectPath);
+      
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.message || "Failed to log in. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Handle registration submission
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (registerPassword !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please ensure both passwords match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      
+      const { error } = await supabase.auth.signUp({
+        email: registerEmail,
+        password: registerPassword,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Registration successful",
+        description: "Check your email for a confirmation link to complete your registration.",
+      });
+      
+      // Set active tab to login after successful registration
+      setActiveTab('login');
+      
+    } catch (error: any) {
+      toast({
+        title: "Registration failed",
+        description: error.message || "Failed to register. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -50,68 +111,108 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">Welcome to Bloom Basket</h2>
-          <p className="mt-2 text-gray-600">Sign in or create an account to continue</p>
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-3xl font-bold mb-8 text-center">Account</h1>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="register">Register</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login">
+              <div className="bg-white p-6 rounded-lg border">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Email</Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="login-password">Password</Label>
+                      <a href="#" className="text-sm text-blue-600 hover:underline">
+                        Forgot password?
+                      </a>
+                    </div>
+                    <Input
+                      id="login-password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? 'Logging in...' : 'Login'}
+                  </Button>
+                </form>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="register">
+              <div className="bg-white p-6 rounded-lg border">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Password</Label>
+                    <Input
+                      id="register-password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? 'Creating account...' : 'Create account'}
+                  </Button>
+                  
+                  <p className="text-sm text-gray-500 mt-4">
+                    By creating an account, you agree to our Terms of Service and Privacy Policy.
+                  </p>
+                </form>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-pink-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-pink-500"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <a href="/auth/forgot-password" className="text-pink-600 hover:text-pink-500">
-                Forgot password?
-              </a>
-            </div>
-            <div className="text-sm">
-              <a href="/auth/sign-up" className="text-pink-600 hover:text-pink-500">
-                Sign Up
-              </a>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-md bg-pink-600 px-4 py-2 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
       </div>
-    </div>
+    </Layout>
   );
 } 

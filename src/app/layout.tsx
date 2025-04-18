@@ -1,15 +1,30 @@
+'use client';
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import { Providers } from "./providers";
-import ClientLayout from '@/components/ClientLayout';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
+import { Toaster } from "react-hot-toast";
+import Layout from "@/components/Layout";
+import "../index.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Mystore",
-  description: "Your one-stop destination for all your shopping needs.",
+  title: "MyStore",
+  description: "Your one-stop shop for everything",
 };
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function RootLayout({
   children,
@@ -19,9 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <CartProvider>
+              <Layout>{children}</Layout>
+              <Toaster position="bottom-right" />
+            </CartProvider>
+          </AuthProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
